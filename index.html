@@ -5,143 +5,281 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Warung Makan Kuno China - Portrait Android Edition</title>
   <style>
-    :root {
-      --ink: #28170e;
-      --wood: #59331d;
-      --wood-dark: #2e180e;
-      --paper: #f3dfaf;
-      --red: #9b1d1d;
-      --gold: #eab95e;
-      --furniture-color: linear-gradient(#9e5e2d, #643316);
-      --furniture-border: #2d160a;
-    }
-    * { box-shadow: none; box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body, html {
-      width: 100%; height: 100%; background: #23150e;
-      font-family: "Georgia", serif; overflow: hidden;
-    }
-
-    /* Layout Bertingkat Khusus Portrait HP */
-    .game-container { 
-      display: flex; flex-direction: column;
-      width: 100%; height: 100%; padding: 4px; gap: 4px;
-    }
-    
-    .wood-panel { background: linear-gradient(100deg, rgba(103,59,32,.98), rgba(63,32,19,.98)); border: 2px solid #b77a3c; color: white; border-radius: 8px; padding: 4px 8px; }
-    .paper-panel { background: #f3dfaf; background-image: repeating-linear-gradient(0deg, rgba(101,61,28,.05) 0 1px, transparent 1px 6px); border: 2px solid #74421f; border-radius: 8px; padding: 4px; }
-    
-    /* 1. HUD ATAS (Tinggi 10%) */
-    .hud-bar { display: flex; justify-content: space-between; align-items: center; height: 10%; }
-    .hud-info { display: flex; flex-direction: column; }
-    .hud-title { font-size: 11px; font-weight: bold; color: var(--gold); }
-    .hud-time { font-size: 8px; color: #6ee7b7; font-weight: bold; }
-    .hud-stats { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: bold; }
-    .stat-badge { background: #2e180e; padding: 2px 4px; border-radius: 4px; border: 1px solid #b77a3c; }
-    .btn-action { background: linear-gradient(to right, #f59e0b, #ca8a04); color: #451a03; padding: 2px 4px; border-radius: 4px; font-size: 8px; font-weight: 900; border: 1px solid #fde047; cursor: pointer; }
-    .btn-action.hidden { display: none; }
-
-    /* 2. AREA MEJA & PELANGGAN (Tinggi 24%) */
-    .shop-scene { 
-      position: relative; height: 24%; 
-      background: repeating-linear-gradient(90deg, #704424 0 40px, #5a311b 41px 44px); 
-      border: 3px solid #331a0d; border-radius: 8px; overflow: hidden;
-    }
-    .shop-scene.upgraded { background: repeating-linear-gradient(90deg, #834c24 0 40px, #5b2d16 41px 44px); }
-    .floor { position:absolute; bottom:0; left:0; right:0; height:24px; background: #3c2315; border-top: 3px solid #1f1009; z-index: 10; }
-    .table-top { position:absolute; left:4%; right:4%; bottom:20px; height:12px; border: 2px solid var(--furniture-border); border-radius: 4px; background: var(--furniture-color); z-index: 20; transition: all 0.3s ease; }
-    
-    .customer-slot { position:absolute; bottom:24px; width:80px; text-align:center; z-index: 40; display: none; }
-    .customer-slot.active { display: block; }
-    #slot-0 { left: 6%; } #slot-1 { left: 38%; } #slot-2 { left: 70%; }
-    
-    .bubble { position:relative; margin:0 auto 1px; width:85px; padding:2px; border:1.5px solid #59331d; border-radius:5px; background:#fff4d7; font-size:8px; font-weight:700; line-height:1.1; color: var(--ink); }
-    .bubble:after { content:""; position:absolute; bottom:-5px; left:44%; width:5px; height:5px; background:#fff4d7; border-right:1.5px solid #59331d; border-bottom:1.5px solid #59331d; transform:rotate(45deg); }
-    .avatar { font-size:28px; filter: drop-shadow(1px 1px 0 #2d170c); line-height:1; }
-    .patience { width:50px; height:4px; margin:1px auto; background:#331a10; border:1px solid #e0bd74; border-radius:99px; overflow:hidden; }
-    .patience-fill { height:100%; width:100%; background:#4caf50; transform-origin:left; }
-    
-    /* 3. PANEL TENGAH: MANAGEMENT UTENSILS (Tinggi 24%) */
-    .middle-management {
-      display: flex; height: 24%; gap: 4px; font-size: 8px; font-weight: bold; color: #59331d;
-    }
-    .mgmt-box { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 4px; }
-    .stove-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-    .stove-box { aspect-ratio: 1.3; border-radius: 4px; border: 1.5px solid #401d0e; background: linear-gradient(100deg, #944920, #753617); position: relative; cursor: pointer; }
-    .stove-rim { position: absolute; top: 1px; left: 1px; right: 1px; bottom: 1px; border-radius: 2px; background: #23120b; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
-    
-    .storage-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; background: #4a2711; padding: 2px; border-radius: 4px; }
-    .storage-slot { aspect-ratio: 1; background: #fff4d7; border: 1px solid #74421f; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-size: 12px; cursor: pointer; position: relative; }
-    .fresh-bar { position: absolute; bottom: 1px; left: 1px; right: 1px; height: 2px; background: #22c55e; }
-
-    .tray-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; background: #283725; padding: 2px; border-radius: 4px; border: 1px solid #3c6e31; }
-    .tray-slot { aspect-ratio: 1; background: #e2fcdb; border: 1px solid #35622a; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-size: 12px; cursor: pointer; }
-
-    /* 4. AREA BAWAH: BUKU RESEP GULIR (Tinggi 40%) */
-    .menu-panel { flex: 1; overflow-y: auto; height: 40%; }
-    .menu-title { font-size: 9px; font-weight: 900; color: #7f1d1d; border-bottom: 1px solid rgba(127,29,29,0.2); margin-bottom: 2px; margin-top: 2px; }
-    .menu-title.sayur { color: #14532d; border-bottom-color: rgba(20,83,45,0.2); }
-    .menu-title.berat { color: #78350f; border-bottom-color: rgba(120,53,15,0.2); }
-    .menu-title.premium { color: #581c87; border-bottom-color: rgba(88,28,135,0.2); }
-    .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
-    .menu-button { text-align: center; padding: 3px 1px; border-radius: 4px; border: 1px solid rgba(92,48,19,.55); background: rgba(255,250,225,0.9); font-weight: 700; cursor: pointer; font-size: 8px; color: var(--ink); }
-
-    .upgrade-section-box { background: rgba(255,255,255,0.25); border: 1px solid #74421f; border-radius: 4px; padding: 2px; display: flex; justify-content: space-between; gap: 4px; font-size: 8px; width: 100%; margin-top: 2px; }
-
-    /* POPUP OVERLAY REKAP */
-    .report-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 100; }
-    .scroll-paper { background: #fdf3d3; border: 4px double #8b4513; width: 280px; padding: 10px; border-radius: 4px; text-align: center; color: #3e2723; }
-    .scroll-title { font-size: 12px; font-weight: 800; border-bottom: 1.5px dashed #8b4513; padding-bottom: 2px; color: #7f1d1d; }
-    .report-row { display: flex; justify-content: space-between; font-size: 9px; font-weight: bold; margin: 4px 0; border-bottom: 1px dotted rgba(0,0,0,0.1); }
-    .btn-close-report { background: #5d4037; color: white; font-weight: bold; border: none; padding: 4px; border-radius: 4px; font-size: 9px; cursor: pointer; margin-top: 4px; width: 100%; }
-
-    .pop-alert { position: absolute; font-weight: 800; font-size: 10px; left: 0; right: 0; margin: 0 auto; top: -8px; animation: popUp 0.8s ease-out forwards; pointer-events: none; z-index: 50; }
-    @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-12px); } }
+    :root {--ink:#28170e;--gold:#eab95e;--furniture-color:linear-gradient(#9e5e2d,#643316);--furniture-border:#2d160a;}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body,html{width:100%;height:100%;background:#23150e;font-family:"Georgia",serif;overflow:hidden}
+    .game-container{display:flex;flex-direction:column;width:100%;height:100%;padding:4px;gap:4px}
+    .wood-panel{background:linear-gradient(100deg,rgba(103,59,32,.98),rgba(63,32,19,.98));border:2px solid #b77a3c;color:white;border-radius:8px;padding:4px 8px}
+    .paper-panel{background:#f3dfaf;border:2px solid #74421f;border-radius:8px;padding:4px}
+    .hud-bar{display:flex;justify-content:space-between;align-items:center;height:10%}
+    .hud-title{font-size:11px;font-weight:bold;color:var(--gold)}
+    .hud-time{font-size:8px;color:#6ee7b7;font-weight:bold}
+    .hud-stats{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:bold}
+    .stat-badge{background:#2e180e;padding:2px 4px;border-radius:4px;border:1px solid #b77a3c}
+    .btn-action{background:linear-gradient(to right,#f59e0b,#ca8a04);color:#451a03;padding:2px 4px;border-radius:4px;font-size:8px;font-weight:900;border:1px solid #fde047;cursor:pointer}
+    .btn-action.hidden{display:none}
+    .shop-scene{position:relative;height:24%;background:repeating-linear-gradient(90deg,#704424 0 40px,#5a311b 41px 44px);border:3px solid #331a0d;border-radius:8px;overflow:hidden}
+    .floor{position:absolute;bottom:0;left:0;right:0;height:24px;background:#3c2315;border-top:3px solid #1f1009;z-index:10}
+    .table-top{position:absolute;left:4%;right:4%;bottom:20px;height:12px;border:2px solid var(--furniture-border);border-radius:4px;background:var(--furniture-color);z-index:20}
+    .customer-slot{position:absolute;bottom:24px;width:80px;text-align:center;z-index:40;display:none}
+    .customer-slot.active{display:block}
+    #slot-0{left:6%}#slot-1{left:38%}#slot-2{left:70%}
+    .bubble{position:relative;margin:0 auto 1px;width:85px;padding:2px;border:1.5px solid #59331d;border-radius:5px;background:#fff4d7;font-size:8px;font-weight:700;color:var(--ink)}
+    .avatar{font-size:28px}
+    .patience{width:50px;height:4px;margin:1px auto;background:#331a10;border:1px solid #e0bd74;border-radius:99px;overflow:hidden}
+    .patience-fill{height:100%;width:100%;background:#4caf50}
+    .middle-management{display:flex;height:24%;gap:4px;font-size:8px;font-weight:bold;color:#59331d}
+    .mgmt-box{flex:1;display:flex;flex-direction:column;padding:4px}
+    .stove-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+    .stove-box{aspect-ratio:1.3;border-radius:4px;border:1.5px solid #401d0e;background:linear-gradient(100deg,#944920,#753617);cursor:pointer;position:relative}
+    .stove-rim{position:absolute;inset:1px;border-radius:2px;background:#23120b;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white}
+    .storage-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:#4a2711;padding:2px;border-radius:4px}
+    .storage-slot{aspect-ratio:1;background:#fff4d7;border:1px solid #74421f;border-radius:4px;display:flex;justify-content:center;align-items:center;font-size:12px;cursor:pointer;position:relative}
+    .fresh-bar{position:absolute;bottom:1px;left:1px;right:1px;height:2px;background:#22c55e}
+    .tray-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:#283725;padding:2px;border-radius:4px;border:1px solid #3c6e31}
+    .tray-slot{aspect-ratio:1;background:#e2fcdb;border:1px solid #35622a;border-radius:4px;display:flex;justify-content:center;align-items:center;font-size:12px;cursor:pointer}
+    .menu-panel{flex:1;overflow-y:auto;height:40%}
+    .menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+    .menu-button{text-align:center;padding:3px 1px;border-radius:4px;border:1px solid rgba(92,48,19,.55);background:rgba(255,250,225,0.9);font-weight:700;cursor:pointer;font-size:8px;color:var(--ink)}
+    .report-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:100}
+    .scroll-paper{background:#fdf3d3;border:4px double #8b4513;width:280px;padding:10px;border-radius:4px;text-align:center;color:#3e2723}
+    .report-row{display:flex;justify-content:space-between;font-size:9px;font-weight:bold;margin:4px 0}
+    .btn-close-report{background:#5d4037;color:white;font-weight:bold;border:none;padding:4px;border-radius:4px;font-size:9px;cursor:pointer;margin-top:4px;width:100%}
+    .pop-alert{position:absolute;font-weight:800;font-size:10px;top:-8px;animation:popUp 0.8s ease-out forwards;pointer-events:none;z-index:50}
+    @keyframes popUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-12px)}}
   </style>
 </head>
 <body>
-
-  <div class="game-container select-none">
-    
-    <!-- LEVEL 1: STATUS HUD (10%) -->
+  <div class="game-container">
     <div class="wood-panel hud-bar">
-      <div class="hud-info">
-        <div class="hud-title" id="shop-title">🏮 Warung Kuno (Portrait)</div>
-        <div class="hud-time" id="clock-display">📅 Hari 1 · 🕐 06:00 · 🌤️ Cerah</div>
-      </div>
-      <div class="hud-stats">
-        <div class="stat-badge">🪙 <span id="coin-count">0</span></div>
-        <div class="stat-badge">⭐ Lv.<span id="level-count">1</span></div>
-        <button id="btn-upgrade" onclick="upgradeToko()" class="btn-action hidden">Upgrade</button>
-        <button onclick="resetDataGame()" class="btn-action" style="background:#991b1b; color:white; border:none;">Reset</button>
-      </div>
+      <div><div class="hud-title" id="shop-title">🏮 Warung Kuno (Portrait)</div><div class="hud-time" id="clock-display">📅 Hari 1 · 🕐 06:00 · 🌤️ Cerah</div></div>
+      <div class="hud-stats"><div class="stat-badge">🪙 <span id="coin-count">0</span></div><div class="stat-badge">⭐ Lv.<span id="level-count">1</span></div><button id="btn-upgrade" onclick="upgradeToko()" class="btn-action hidden">Upgrade</button><button onclick="resetDataGame()" class="btn-action" style="background:#991b1b;color:white;border:none">Reset</button></div>
     </div>
-
-    <!-- LEVEL 2: ARENA MEJA PELANGGAN (24%) -->
     <div class="shop-scene" id="shop-area">
-      <div id="slot-0" class="customer-slot active" onclick="layaniPelanggan(0)">
-        <div class="bubble" id="bubble-0">Menunggu...</div>
-        <div class="avatar" id="avatar-0">🧔</div>
-        <div class="patience"><div class="patience-fill"></div></div>
-      </div>
-      <div id="slot-1" class="customer-slot active" onclick="layaniPelanggan(1)">
-        <div class="bubble" id="bubble-1">Menunggu...</div>
-        <div class="avatar" id="avatar-1">🧕</div>
-        <div class="patience"><div class="patience-fill"></div></div>
-      </div>
-      <div id="slot-2" class="customer-slot" onclick="layaniPelanggan(2)">
-        <div class="bubble" id="bubble-2">Menunggu...</div>
-        <div class="avatar" id="avatar-2">🧑‍🌾</div>
-        <div class="patience"><div class="patience-fill"></div></div>
-      </div>
-      <div class="floor"></div>
-      <div class="table-top" id="furniture-table"></div>
+      <div id="slot-0" class="customer-slot" onclick="layaniPelanggan(0)"><div class="bubble" id="bubble-0">Menunggu...</div><div class="avatar" id="avatar-0">🧔</div><div class="patience"><div class="patience-fill" id="patience-0"></div></div></div>
+      <div id="slot-1" class="customer-slot" onclick="layaniPelanggan(1)"><div class="bubble" id="bubble-1">Menunggu...</div><div class="avatar" id="avatar-1">🧕</div><div class="patience"><div class="patience-fill" id="patience-1"></div></div></div>
+      <div id="slot-2" class="customer-slot" onclick="layaniPelanggan(2)"><div class="bubble" id="bubble-2">Menunggu...</div><div class="avatar" id="avatar-2">🧑‍🌾</div><div class="patience"><div class="patience-fill" id="patience-2"></div></div></div>
+      <div class="floor"></div><div class="table-top" id="furniture-table"></div>
     </div>
-
-    <!-- LEVEL 3: DAPUR & MANAJEMEN RAK ALAT (24%) -->
     <div class="paper-panel middle-management">
-      <div class="mgmt-box" style="border-right: 1px dashed #74421f;">
-        <div class="tray-header"><span>🍽️ Nampan (Maks 5):</span><button onclick="buangNampan()" class="btn-clear-tray">X</button></div>
-        <div class="tray-grid" id="tray-container"></div>
-        <span>📦 Rak Lemari (Maks 10):</span>
-        
+      <div class="mgmt-box"><div style="display:flex;justify-content:space-between"><span>🍽️ Nampan (5)</span><button onclick="buangNampan()" style="background:#991b1b;color:white;border:none;font-size:7px">X</button></div><div class="tray-grid" id="tray-container"></div><span>📦 Lemari (10)</span><div class="storage-grid" id="storage-container"></div></div>
+      <div class="mgmt-box"><span>🔥 5 Tungku</span><div class="stove-grid" id="stove-container"></div><div style="background:rgba(255,255,255,.25);border:1px solid #74421f;border-radius:4px;padding:2px;display:flex;justify-content:space-between;gap:4px;font-size:8px"><span id="txt-speed-lv">Alat: Lv.1</span><button id="btn-buy-speed" onclick="upgradeKecepatan()" class="btn-action">🪙25</button><button id="btn-buy-helper" onclick="sewaMagang()" class="btn-action">Sewa</button></div></div>
+    </div>
+    <div class="paper-panel menu-panel"><div style="color:#1e40af;font-weight:900;font-size:9px">🍹 MINUMAN</div><div class="menu-grid" id="cat-minuman"></div><div style="color:#14532d;font-weight:900;font-size:9px">🥬 SAYURAN</div><div class="menu-grid" id="cat-sayuran"></div><div style="color:#78350f;font-weight:900;font-size:9px">🍚 MAKANAN BERAT</div><div class="menu-grid" id="cat-makanan-berat"></div><div style="color:#581c87;font-weight:900;font-size:9px">👑 PREMIUM</div><div class="menu-grid" id="cat-premium"></div></div>
+  </div>
+  <div class="report-overlay" id="daily-report-modal"><div class="scroll-paper"><div class="scroll-title" id="report-date-text">Rekap Kas Hari Ke-1</div><div class="report-row"><span>💰 Pendapatan:</span><span id="rep-income">0</span></div><div class="report-row"><span>🧑‍💼 Gaji Magang:</span><span id="rep-wage">-0</span></div><div class="report-row" id="rep-tax-row"><span>👑 Pajak:</span><span id="rep-tax">-0</span></div><div class="report-row"><span>✅ Sukses:</span><span id="rep-success">0</span></div><div class="report-row"><span>⏳ Hangus:</span><span id="rep-fail">0</span></div><div class="report-row"><span>⭐ Total XP:</span><span id="rep-xp">0</span></div><button onclick="tutupLaporanHarian()" class="btn-close-report">Buka Besok</button></div></div>
+  <script>
+const databaseMenu = [
+{ id: "air_putih", nama: "Air Putih", kategori: "minuman", harga: 1, instan: true, ikon: "🥛" },
+{ id: "air_suhu", nama: "Air P/D", kategori: "minuman", harga: 2, instan: true, ikon: "💧" },
+{ id: "air_manis_ruang", nama: "Air Manis", kategori: "minuman", harga: 3, instan: true, ikon: "🍯" },
+{ id: "teh_panas", nama: "Teh Panas", kategori: "minuman", harga: 3, instan: false, ikon: "🍵" },
+{ id: "jus_buah", nama: "Jus Buah", kategori: "minuman", harga: 3, instan: false, ikon: "🍹" },
+{ id: "air_manis_suhu", nama: "Manis D/P", kategori: "minuman", harga: 4, instan: true, ikon: "🧪" },
+{ id: "teh_manis", nama: "Teh Manis", kategori: "minuman", harga: 4, instan: false, ikon: "🫖" },
+{ id: "tumis_rebung", nama: "Rebung", kategori: "sayuran", harga: 3, instan: false, ikon: "🎋" },
+{ id: "tumis_sawi", nama: "Sawi", kategori: "sayuran", harga: 3, instan: false, ikon: "🥬" },
+{ id: "bening_kubis", nama: "Bening Kubis", kategori: "sayuran", harga: 3, instan: false, ikon: "🥣" },
+{ id: "tumis_kecambah", nama: "Kecambah", kategori: "sayuran", harga: 3, instan: false, ikon: "🌱" },
+{ id: "acar_sayur", nama: "Acar Sayur", kategori: "sayuran", harga: 3, instan: false, ikon: "🥒" },
+{ id: "ubi_rebus", nama: "Ubi Rebus", kategori: "makanan-berat", harga: 2, instan: false, ikon: "🍠" },
+{ id: "jagung_rebus", nama: "Jagung Rebus", kategori: "makanan-berat", harga: 2, instan: false, ikon: "🌽" },
+{ id: "milet_rebus", nama: "Milet Rebus", kategori: "makanan-berat", harga: 2, instan: false, ikon: "🌾" },
+{ id: "bubur_nasi", nama: "Bubur Nasi", kategori: "makanan-berat", harga: 3, instan: false, ikon: "🍚" },
+{ id: "bubur_kacang", nama: "Bubur Kacang", kategori: "makanan-berat", harga: 3, instan: false, ikon: "🥣" },
+{ id: "bakpao_sayur", nama: "Bakpao Sayur", kategori: "premium", harga: 2, instan: false, ikon: "🫓" },
+{ id: "roti_nan", nama: "Roti Nan", kategori: "premium", harga: 2, instan: false, ikon: "🫓" },
+{ id: "bakpao_ayam", nama: "Bakpao Ayam", kategori: "premium", harga: 3.5, instan: false, ikon: "🥟" },
+{ id: "roti_nan_manis", nama: "Nan Manis", kategori: "premium", harga: 3, instan: false, ikon: "🧇" },
+{ id: "bakpao_sapi", nama: "Bakpao Sapi", kategori: "premium", harga: 5, instan: false, ikon: "🥯" },
+{ id: "telur_rebus", nama: "Telur Rebus", kategori: "premium", harga: 2.5, instan: false, ikon: "🥚" },
+{ id: "bakso_rebus", nama: "Bakso Rebus", kategori: "premium", harga: 2, instan: false, ikon: "🍡" },
+{ id: "bakso_bakar", nama: "Bakso Bakar", kategori: "premium", harga: 2, instan: false, ikon: "🍢" },
+{ id: "telur_asin", nama: "Telur Asin", kategori: "premium", harga: 3.5, instan: false, ikon: "🥚" },
+{ id: "ikan_rebus", nama: "Ikan Rebus", kategori: "premium", harga: 4, instan: false, ikon: "🐟" },
+{ id: "ikan_bakar", nama: "Ikan Bakar", kategori: "premium", harga: 4, instan: false, ikon: "🐟" },
+{ id: "semur_jeroan", nama: "Semur Jeroan", kategori: "premium", harga: 5, instan: false, ikon: "🍲" },
+{ id: "sop_ayam", nama: "Sop Ayam", kategori: "premium", harga: 5, instan: false, ikon: "🍜" },
+{ id: "babi_rebus", nama: "Babi Rebus", kategori: "premium", harga: 7, instan: false, ikon: "🥩" },
+{ id: "iga_bakar", nama: "Iga Bakar", kategori: "premium", harga: 10, instan: false, ikon: "🍖" }
+];
+
+const avatars = ["🧔", "🧕", "🧑‍🌾", "🥷", "👵", "⚔️"];
+let koin = 0, level = 1, xp = 0, isUpgraded = false, lvKecepatanMasak = 1;
+let memilikiPelayanMagang = false, cuacaAktifIdx = 0, harianPendapatan = 0, harianSukses = 0, harianHangus = 0, harianXP = 0;
+let gameIsPaused = false, gameMenit = 0, gameJam = 6, gameHari = 1;
+let daftarCuaca = ["Cerah", "Hujan", "Salju"], nampanTangan = [null,null,null,null,null], lemariPenyimpanan = Array(10).fill(null);
+let dataTungku = [
+{ id: 1, dibeli: true, hargaBeli: 0, status: "Kosong", item: null, sisaWaktu: 0 },
+{ id: 2, dibeli: false, hargaBeli: 15, status: "Terkunci", item: null, sisaWaktu: 0 },
+{ id: 3, dibeli: false, hargaBeli: 30, status: "Terkunci", item: null, sisaWaktu: 0 },
+{ id: 4, dibeli: false, hargaBeli: 50, status: "Terkunci", item: null, sisaWaktu: 0 },
+{ id: 5, dibeli: false, hargaBeli: 80, status: "Terkunci", item: null, sisaWaktu: 0 }
+];
+let pelanggan = [
+{ aktif: false, daftarPesanan: [], sisaWaktu: 0, totalWaktu: 20, tipe: "Biasa" },
+{ aktif: false, daftarPesanan: [], sisaWaktu: 0, totalWaktu: 20, tipe: "Biasa" },
+{ aktif: false, daftarPesanan: [], sisaWaktu: 0, totalWaktu: 20, tipe: "Biasa" }
+];
+
+function updateSiklusWaktuGame() {
+  if(gameIsPaused) return;
+  gameMenit++;
+  if (gameMenit >= 60) {
+    gameMenit = 0; gameJam++;
+    if (gameJam === 6 || gameJam === 18) cuacaAktifIdx = Math.floor(Math.random() * 3);
+    if (gameJam >= 24) { gameJam = 0; bukaLaporanHarian(); gameHari++; if (gameHari > 366) gameHari = 1; }
+  }
+  let pm = gameMenit < 10 ? "0" + gameMenit : gameMenit, pj = gameJam < 10 ? "0" + gameJam : gameJam;
+  document.getElementById("clock-display").innerText = `📅 Hari ${gameHari} · 🕐 ${pj}:${pm} · 🌤️ ${daftarCuaca[cuacaAktifIdx]}`;
+}
+
+function bukaLaporanHarian() {
+  gameIsPaused = true;
+  document.getElementById("report-date-text").innerText = `Rekap Kas Hari Ke-${gameHari}`;
+  document.getElementById("rep-income").innerText = `${harianPendapatan} 🪙`;
+  let bebanGaji = memilikiPelayanMagang ? (isUpgraded ? 25 : 15) : 0;
+  document.getElementById("rep-wage").innerText = `-${bebanGaji} 🪙`;
+  koin = Math.max(0, koin - bebanGaji);
+  let bebanPajak = 0, taxRow = document.getElementById("rep-tax-row");
+  if (gameHari % 10 === 0) {
+    bebanPajak = 20; taxRow.style.display = "flex";
+    document.getElementById("rep-tax").innerText = `-${bebanPajak} 🪙`; koin = Math.max(0, koin - bebanPajak);
+  } else { taxRow.style.display = "none"; }
+  document.getElementById("rep-success").innerText = harianSukses; 
+  document.getElementById("rep-fail").innerText = harianHangus; 
+  document.getElementById("rep-xp").innerText = harianXP;
+  document.getElementById("daily-report-modal").style.display = "flex";
+}
+
+function tutupLaporanHarian() { 
+  harianPendapatan = 0; harianSukses = 0; harianHangus = 0; harianXP = 0; 
+  gameIsPaused = false; 
+  document.getElementById("daily-report-modal").style.display = "none"; 
+  updateDisplay(); 
+}
+    function renderMenu() {
+  const cats = {
+    "minuman": document.getElementById("cat-minuman"),
+    "sayuran": document.getElementById("cat-sayuran"),
+    "makanan-berat": document.getElementById("cat-makanan-berat"),
+    "premium": document.getElementById("cat-premium")
+  };
+  Object.values(cats).forEach(c => c.innerHTML = '');
+  databaseMenu.forEach(item => {
+    cats[item.kategori].insertAdjacentHTML('beforeend', `<button onclick="prosesAksiMenu('${item.id}')" class="menu-button"><b>${item.ikon}</b><br>${item.nama}</button>`);
+  });
+}
+
+function renderTungku() {
+  const container = document.getElementById("stove-container"); container.innerHTML = '';
+  dataTungku.forEach((t, idx) => {
+    let isi = t.status==="Terkunci"? `<span>🔒</span>` : t.status==="Kosong"? `<span>💨</span>` : `<b>${t.item.ikon}</b><b style="color:#f97316; font-size:7px;">${t.sisaWaktu}s</b>`;
+    container.insertAdjacentHTML('beforeend', `<div onclick="klikTungku(${idx})" class="stove-box"><div class="stove-rim">${isi}</div></div>`);
+  });
+}
+
+function renderLemariPenyimpanan() {
+  const container = document.getElementById("storage-container"); container.innerHTML = '';
+  for (let i = 0; i < 10; i++) {
+    let isi = lemariPenyimpanan[i]? `<b>${lemariPenyimpanan[i].item.ikon}</b><div class="fresh-bar" style="background:${lemariPenyimpanan[i].freshValue>40?'#22c55e':'#ef4444'}; width:${lemariPenyimpanan[i].freshValue}%"></div>` : '';
+    container.insertAdjacentHTML('beforeend', `<div onclick="klikSlotLemari(${i})" class="storage-slot">${isi}</div>`);
+  }
+}
+
+function renderNampan() {
+  const container = document.getElementById("tray-container"); container.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    container.insertAdjacentHTML('beforeend', `<div onclick="kembalikanDariNampan(${i})" class="tray-slot">${nampanTangan[i]?nampanTangan[i].ikon:''}</div>`);
+  }
+}
+
+function renderPelanggan() {
+  pelanggan.forEach((p, i) => {
+    let slot = document.getElementById(`slot-${i}`);
+    if(p.aktif) {
+      slot.classList.add('active');
+      document.getElementById(`bubble-${i}`).innerText = p.daftarPesanan[0]?.nama || "Menunggu...";
+      document.getElementById(`avatar-${i}`).innerText = avatars[Math.floor(Math.random()*avatars.length)];
+      document.getElementById(`patience-${i}`).style.width = (p.sisaWaktu / p.totalWaktu * 100) + '%';
+    } else {
+      slot.classList.remove('active');
+    }
+  });
+}
+
+function updateDisplay() {
+  document.getElementById("coin-count").innerText = koin;
+  document.getElementById("level-count").innerText = level;
+  const bu = document.getElementById("btn-upgrade");
+  if (level >= 5 &&!isUpgraded) bu.classList.remove("hidden"); else bu.classList.add("hidden");
+  document.getElementById("txt-speed-lv").innerText = `Alat: Lv.${lvKecepatanMasak}`;
+  const bs = document.getElementById("btn-buy-speed");
+  if (lvKecepatanMasak >= 4) { bs.innerText = "MAX"; bs.disabled = true; } else { bs.innerText = `🪙${lvKecepatanMasak*25}`; }
+  const bh = document.getElementById("btn-buy-helper");
+  if (memilikiPelayanMagang) { bh.innerText = "DIPEKERJAKAN"; bh.disabled = true; } else { bh.innerText = `🪙${isUpgraded? 80 : 50}`; }
+  document.getElementById("shop-title").innerText = isUpgraded? "🏮 Warung Kuno Mahoni" : "🏮 Warung Kuno Bambu";
+  document.getElementById("shop-area").className = isUpgraded? "shop-scene upgraded" : "shop-scene";
+  document.getElementById("furniture-table").style.background = isUpgraded? 'linear-gradient(#a16207, #713f12)' : 'linear-gradient(#9e5e2d, #643316)';
+  renderTungku(); renderLemariPenyimpanan(); renderNampan(); renderPelanggan();
+}
+
+function klikTungku(idx) {
+  let t = dataTungku[idx];
+  if (t.status === "Terkunci" && koin >= t.hargaBeli) {
+    koin -= t.hargaBeli; t.dibeli = true; t.status = "Kosong";
+  } else if (t.status === "Kosong") {
+    t.status = "Memasak"; t.item = databaseMenu[Math.floor(Math.random()*databaseMenu.length)];
+    t.sisaWaktu = t.item.instan? 3 : 10 - lvKecepatanMasak;
+  }
+  updateDisplay();
+}
+
+function prosesAksiMenu(idMenu) {
+  let item = databaseMenu.find(i => i.id === idMenu);
+  if (!item) return;
+  let slotKosong = lemariPenyimpanan.findIndex(s =>!s);
+  if (slotKosong === -1) return alert("Lemari Penuh!");
+  lemariPenyimpanan[slotKosong] = { item: item, freshValue: 100 };
+  updateDisplay();
+}
+
+function layaniPelanggan(slotIdx) {
+  let p = pelanggan[slotIdx];
+  if (!p.aktif) return;
+  let pesanan = p.daftarPesanan[0];
+  let slotNampan = nampanTangan.findIndex(s => s && s.id === pesanan.id);
+  if (slotNampan!== -1) {
+    nampanTangan[slotNampan] = null;
+    p.daftarPesanan.shift();
+    koin += pesanan.harga; xp += 1; harianPendapatan += pesanan.harga; harianSukses += 1; harianXP += 1;
+    munculkanPop("+ " + pesanan.harga, slotIdx);
+    if (p.daftarPesanan.length === 0) p.aktif = false;
+  }
+  updateDisplay();
+}
+
+function munculkanPop(teks, slot) {
+  let el = document.createElement("div"); el.className = "pop-alert"; el.style.color = "#22c55e";
+  el.innerText = teks; document.getElementById(`slot-${slot}`).appendChild(el);
+  setTimeout(() => el.remove(), 800);
+}
+
+function resetDataGame() {
+  if (confirm("Yakin reset semua data?")) {
+    localStorage.clear(); location.reload();
+  }
+}
+
+function upgradeToko(){ if(level>=5 && koin>=200){koin-=200; isUpgraded=true; updateDisplay();}}
+function upgradeKecepatan(){ if(lvKecepatanMasak<4 && koin>=lvKecepatanMasak*25){koin-=lvKecepatanMasak*25; lvKecepatanMasak++; updateDisplay();}}
+function sewaMagang(){ if(!memilikiPelayanMagang && koin>= (isUpgraded? 80 : 50)){koin-= (isUpgraded? 80 : 50); memilikiPelayanMagang=true; updateDisplay();}}
+function buangNampan(){ nampanTangan = [null,null,null,null,null]; updateDisplay();}
+function kembalikanDariNampan(i){ nampanTangan[i]=null; updateDisplay();}
+function klikSlotLemari(i){ if(lemariPenyimpanan[i]){ let slotNampan = nampanTangan.findIndex(s=>!s); if(slotNampan!==-1){ nampanTangan[slotNampan]=lemariPenyimpanan[i].item; lemariPenyimpanan[i]=null; } } updateDisplay();}
+
+setInterval(updateSiklusWaktuGame, 1000);
+renderMenu(); updateDisplay();
+</script>
+</body>
+</html>
